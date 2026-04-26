@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alarm</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f0f0f;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      gap: 40px;
+    }
+
+    #clock {
+      font-size: 72px;
+      font-weight: 200;
+      letter-spacing: 4px;
+      color: #f0f0f0;
+    }
+
+    .card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 32px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      width: 320px;
+    }
+
+    .card h2 {
+      font-size: 14px;
+      font-weight: 400;
+      color: #888;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    input[type="time"] {
+      background: #0f0f0f;
+      border: 1px solid #333;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 36px;
+      font-weight: 200;
+      padding: 12px 20px;
+      width: 100%;
+      text-align: center;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="time"]:focus {
+      border-color: #555;
+    }
+
+    input[type="time"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      opacity: 0.4;
+      cursor: pointer;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      letter-spacing: 0.5px;
+    }
+
+    #toggleBtn {
+      background: #fff;
+      color: #0f0f0f;
+    }
+
+    #toggleBtn:hover { background: #ddd; }
+
+    #toggleBtn.active {
+      background: #ff4444;
+      color: #fff;
+    }
+
+    #toggleBtn.active:hover { background: #e03333; }
+
+    #status {
+      font-size: 13px;
+      color: #555;
+      height: 18px;
+    }
+
+    #status.on { color: #4caf50; }
+
+    /* Ringing overlay */
+    #ringing {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      z-index: 100;
+    }
+
+    #ringing.show { display: flex; }
+
+    #ringing .ring-time {
+      font-size: 80px;
+      font-weight: 200;
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    #ringing p {
+      font-size: 16px;
+      color: #aaa;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    #stopBtn {
+      background: #fff;
+      color: #0f0f0f;
+      padding: 16px 48px;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      letter-spacing: 1px;
+    }
+
+    #stopBtn:hover { background: #ddd; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="clock">00:00:00</div>
+
+  <div class="card">
+    <h2>Set Alarm</h2>
+    <input type="time" id="alarmTime" value="07:00">
+    <button id="toggleBtn" onclick="toggleAlarm()">Set Alarm</button>
+    <span id="status">—</span>
+  </div>
+
+  <div id="ringing">
+    <div class="ring-time" id="ringTime"></div>
+    <p>Alarm</p>
+    <button id="stopBtn" onclick="stopAlarm()">Stop</button>
+  </div>
+
+  <script>
+    let alarmSet = false;
+    let alarmTime = null;
+    let ringing = false;
+    let audioCtx = null;
+    let alarmNodes = [];
+
+    function padZ(n) { return String(n).padStart(2, '0'); }
+
+    function tick() {
+      const now = new Date();
+      const h = padZ(now.getHours());
+      const m = padZ(now.getMinutes());
+      const s = padZ(now.getSeconds());
+      document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+
+      if (alarmSet && !ringing) {
+        const current = `${h}:${m}`;
+        if (current === alarmTime && s === '00') {
+          triggerAlarm();
+        }
+      }
+    }
+
+    function toggleAlarm() {
+      if (alarmSet) {
+        alarmSet = false;
+        alarmTime = null;
+        document.getElementById('toggleBtn').textContent = 'Set Alarm';
+        document.getElementById('toggleBtn').classList.remove('active');
+        document.getElementById('status').textContent = '—';
+        document.getElementById('status').classList.remove('on');
+      } else {
+        const val = document.getElementById('alarmTime').value;
+        if (!val) return;
+        alarmTime = val;
+        alarmSet = true;
+        document.getElementById('toggleBtn').textContent = 'Cancel';
+        document.getElementById('toggleBtn').classList.add('active');
+        document.getElementById('status').textContent = `ON  ${val}`;
+        document.getElementById('status').classList.add('on');
+      }
+    }
+
+    function triggerAlarm() {
+      ringing = true;
+      document.getElementById('ringTime').textContent = alarmTime;
+      document.getElementById('ringing').classList.add('show');
+      startBeep();
+    }
+
+    function stopAlarm() {
+      ringing = false;
+      alarmSet = false;
+      alarmTime = null;
+      document.getElementById('ringing').classList.remove('show');
+      document.getElementById('toggleBtn').textContent = 'Set Alarm';
+      document.getElementById('toggleBtn').classList.remove('active');
+      document.getElementById('status').textContent = '—';
+      document.getElementById('status').classList.remove('on');
+      stopBeep();
+    }
+
+    function startBeep() {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      function beep() {
+        if (!ringing) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.value = 880;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.5);
+        alarmNodes.push(osc);
+        setTimeout(beep, 900);
+      }
+      beep();
+    }
+
+    function stopBeep() {
+      if (audioCtx) {
+        audioCtx.close();
+        audioCtx = null;
+      }
+      alarmNodes = [];
+    }
+
+    setInterval(tick, 1000);
+    tick();
+  </script>
+</body>
+</html>
