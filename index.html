@@ -3,70 +3,136 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alarm</title>
+  <title>✨ Alarm ✨</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #0f0f0f;
-      color: #fff;
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #fce4f3 0%, #e8d5f5 50%, #d5e8f5 100%);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      gap: 40px;
+      gap: 24px;
+      overflow: hidden;
+      position: relative;
     }
 
+    /* 背景の浮かぶデコ */
+    body::before {
+      content: '🌸 ⭐ 🍓 💫 🎀 ✨ 🌷 ⭐ 🍬 💕';
+      position: fixed;
+      top: -40px;
+      left: 0;
+      width: 200%;
+      font-size: 28px;
+      opacity: 0.18;
+      letter-spacing: 48px;
+      white-space: nowrap;
+      animation: floatBg 18s linear infinite;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '💕 🌙 🍭 ✨ 🎀 🌸 💫 🍓 ⭐ 🌷';
+      position: fixed;
+      bottom: -40px;
+      left: 0;
+      width: 200%;
+      font-size: 28px;
+      opacity: 0.18;
+      letter-spacing: 48px;
+      white-space: nowrap;
+      animation: floatBg 24s linear infinite reverse;
+      pointer-events: none;
+    }
+
+    @keyframes floatBg {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* タイトル */
+    .title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #d468a8;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-shadow: 0 2px 8px rgba(212,104,168,0.25);
+    }
+
+    /* 時計 */
     #clock {
-      font-size: 72px;
-      font-weight: 200;
-      letter-spacing: 4px;
-      color: #f0f0f0;
+      font-size: 68px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #f472b6, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 4px 12px rgba(167,139,250,0.3));
+      letter-spacing: 2px;
     }
 
+    /* カード */
     .card {
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      border-radius: 16px;
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(16px);
+      border: 2.5px solid rgba(244,114,182,0.3);
+      border-radius: 28px;
       padding: 32px 40px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 20px;
       width: 320px;
+      box-shadow: 0 8px 32px rgba(212,104,168,0.15), 0 2px 8px rgba(167,139,250,0.1);
+      position: relative;
+    }
+
+    .card::before {
+      content: '🎀';
+      position: absolute;
+      top: -18px;
+      font-size: 32px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
     }
 
     .card h2 {
-      font-size: 14px;
-      font-weight: 400;
-      color: #888;
-      letter-spacing: 2px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #c084d4;
+      letter-spacing: 2.5px;
       text-transform: uppercase;
     }
 
     input[type="time"] {
-      background: #0f0f0f;
-      border: 1px solid #333;
-      border-radius: 10px;
-      color: #fff;
-      font-size: 36px;
-      font-weight: 200;
+      background: linear-gradient(135deg, #fdf2f8, #f5f0ff);
+      border: 2px solid #f0abda;
+      border-radius: 16px;
+      color: #9333ea;
+      font-size: 38px;
+      font-weight: 700;
+      font-family: 'Nunito', sans-serif;
       padding: 12px 20px;
       width: 100%;
       text-align: center;
       outline: none;
       cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
     input[type="time"]:focus {
-      border-color: #555;
+      border-color: #c084d4;
+      box-shadow: 0 0 0 4px rgba(192,132,212,0.15);
     }
 
     input[type="time"]::-webkit-calendar-picker-indicator {
-      filter: invert(1);
-      opacity: 0.4;
+      filter: invert(0.4) sepia(1) saturate(5) hue-rotate(280deg);
       cursor: pointer;
     }
 
@@ -74,99 +140,123 @@
       width: 100%;
       padding: 14px;
       border: none;
-      border-radius: 10px;
+      border-radius: 50px;
       font-size: 15px;
-      font-weight: 500;
+      font-weight: 800;
+      font-family: 'Nunito', sans-serif;
       cursor: pointer;
-      transition: all 0.15s;
-      letter-spacing: 0.5px;
+      transition: all 0.18s;
+      letter-spacing: 1px;
     }
 
     #toggleBtn {
-      background: #fff;
-      color: #0f0f0f;
+      background: linear-gradient(135deg, #f472b6, #c084d4);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(244,114,182,0.4);
     }
 
-    #toggleBtn:hover { background: #ddd; }
+    #toggleBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(244,114,182,0.45);
+    }
+
+    #toggleBtn:active { transform: translateY(0); }
 
     #toggleBtn.active {
-      background: #ff4444;
-      color: #fff;
+      background: linear-gradient(135deg, #fb923c, #f472b6);
+      box-shadow: 0 4px 16px rgba(251,146,60,0.35);
     }
-
-    #toggleBtn.active:hover { background: #e03333; }
 
     #status {
       font-size: 13px;
-      color: #555;
+      font-weight: 700;
+      color: #d1b3e8;
       height: 18px;
+      letter-spacing: 0.5px;
     }
 
-    #status.on { color: #4caf50; }
+    #status.on { color: #a78bfa; }
 
-    /* Ringing overlay */
+    /* 鳴動オーバーレイ */
     #ringing {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.92);
+      background: linear-gradient(135deg, rgba(253,228,243,0.97), rgba(232,213,245,0.97));
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 32px;
+      gap: 28px;
       z-index: 100;
     }
 
     #ringing.show { display: flex; }
 
+    .ring-emoji {
+      font-size: 72px;
+      animation: ringBounce 0.6s ease-in-out infinite alternate;
+    }
+
     #ringing .ring-time {
-      font-size: 80px;
-      font-weight: 200;
-      animation: pulse 1s ease-in-out infinite;
+      font-size: 72px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #f472b6, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     #ringing p {
-      font-size: 16px;
-      color: #aaa;
-      letter-spacing: 3px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #d468a8;
+      letter-spacing: 4px;
       text-transform: uppercase;
     }
 
     #stopBtn {
-      background: #fff;
-      color: #0f0f0f;
-      padding: 16px 48px;
+      background: linear-gradient(135deg, #f472b6, #c084d4);
+      color: #fff;
+      padding: 16px 52px;
       border-radius: 50px;
       font-size: 16px;
-      font-weight: 600;
+      font-weight: 800;
+      font-family: 'Nunito', sans-serif;
       border: none;
       cursor: pointer;
       letter-spacing: 1px;
+      box-shadow: 0 4px 20px rgba(244,114,182,0.4);
+      transition: all 0.18s;
     }
 
-    #stopBtn:hover { background: #ddd; }
+    #stopBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(244,114,182,0.5);
+    }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
+    @keyframes ringBounce {
+      from { transform: rotate(-15deg) scale(1); }
+      to   { transform: rotate(15deg) scale(1.15); }
     }
   </style>
 </head>
 <body>
 
+  <div class="title">✨ My Alarm ✨</div>
   <div id="clock">00:00:00</div>
 
   <div class="card">
     <h2>Set Alarm</h2>
     <input type="time" id="alarmTime" value="07:00">
-    <button id="toggleBtn" onclick="toggleAlarm()">Set Alarm</button>
-    <span id="status">—</span>
+    <button id="toggleBtn" onclick="toggleAlarm()">🔔 Set Alarm</button>
+    <span id="status">— sweet dreams —</span>
   </div>
 
   <div id="ringing">
+    <div class="ring-emoji">🔔</div>
     <div class="ring-time" id="ringTime"></div>
-    <p>Alarm</p>
-    <button id="stopBtn" onclick="stopAlarm()">Stop</button>
+    <p>Wake up !</p>
+    <button id="stopBtn" onclick="stopAlarm()">🌸 Stop 🌸</button>
   </div>
 
   <script>
@@ -174,7 +264,6 @@
     let alarmTime = null;
     let ringing = false;
     let audioCtx = null;
-    let alarmNodes = [];
 
     function padZ(n) { return String(n).padStart(2, '0'); }
 
@@ -186,10 +275,7 @@
       document.getElementById('clock').textContent = `${h}:${m}:${s}`;
 
       if (alarmSet && !ringing) {
-        const current = `${h}:${m}`;
-        if (current === alarmTime && s === '00') {
-          triggerAlarm();
-        }
+        if (`${h}:${m}` === alarmTime && s === '00') triggerAlarm();
       }
     }
 
@@ -197,18 +283,18 @@
       if (alarmSet) {
         alarmSet = false;
         alarmTime = null;
-        document.getElementById('toggleBtn').textContent = 'Set Alarm';
+        document.getElementById('toggleBtn').textContent = '🔔 Set Alarm';
         document.getElementById('toggleBtn').classList.remove('active');
-        document.getElementById('status').textContent = '—';
+        document.getElementById('status').textContent = '— sweet dreams —';
         document.getElementById('status').classList.remove('on');
       } else {
         const val = document.getElementById('alarmTime').value;
         if (!val) return;
         alarmTime = val;
         alarmSet = true;
-        document.getElementById('toggleBtn').textContent = 'Cancel';
+        document.getElementById('toggleBtn').textContent = '💕 Cancel';
         document.getElementById('toggleBtn').classList.add('active');
-        document.getElementById('status').textContent = `ON  ${val}`;
+        document.getElementById('status').textContent = `✨ ON  ${val} ✨`;
         document.getElementById('status').classList.add('on');
       }
     }
@@ -225,9 +311,9 @@
       alarmSet = false;
       alarmTime = null;
       document.getElementById('ringing').classList.remove('show');
-      document.getElementById('toggleBtn').textContent = 'Set Alarm';
+      document.getElementById('toggleBtn').textContent = '🔔 Set Alarm';
       document.getElementById('toggleBtn').classList.remove('active');
-      document.getElementById('status').textContent = '—';
+      document.getElementById('status').textContent = '— sweet dreams —';
       document.getElementById('status').classList.remove('on');
       stopBeep();
     }
@@ -236,28 +322,26 @@
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       function beep() {
         if (!ringing) return;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.frequency.value = 880;
-        osc.type = 'sine';
-        gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
-        osc.start(audioCtx.currentTime);
-        osc.stop(audioCtx.currentTime + 0.5);
-        alarmNodes.push(osc);
-        setTimeout(beep, 900);
+        [880, 1100, 880].forEach((freq, i) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.frequency.value = freq;
+          osc.type = 'sine';
+          const t = audioCtx.currentTime + i * 0.18;
+          gain.gain.setValueAtTime(0.3, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+          osc.start(t);
+          osc.stop(t + 0.15);
+        });
+        setTimeout(beep, 1200);
       }
       beep();
     }
 
     function stopBeep() {
-      if (audioCtx) {
-        audioCtx.close();
-        audioCtx = null;
-      }
-      alarmNodes = [];
+      if (audioCtx) { audioCtx.close(); audioCtx = null; }
     }
 
     setInterval(tick, 1000);
